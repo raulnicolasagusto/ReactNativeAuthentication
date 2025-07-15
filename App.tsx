@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, Button, Pressable } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Pressable, KeyboardAvoidingView, } from 'react-native';
 export default function App() {
 
   const onPress1 = () => {
@@ -7,21 +7,20 @@ export default function App() {
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView style={styles.container} behavior="padding">
       <Text style={styles.title}>Sign in</Text>
 
-      <TextInput autoCapitalize='none' placeholder="Email" style={styles.input} />
+      <TextInput autoCapitalize='none' placeholder="Email" autoCorrect={false} autoComplete="email" style={styles.input} />
       <TextInput placeholder="Password" style={styles.input} secureTextEntry />
 
-      <Button title="Sign in" onPress={onPress1} />
-      <Text>Don't have an account? Sign up</Text>
-
-      <Pressable style={styles.button} onPress={() => { console.log('Iniciar sesion pressed'); }}>
+      <Pressable style={styles.button} onPress={onPress1}>
         <Text style={styles.buttonText}>Iniciar sesion</Text>
       </Pressable>
 
+      <Text>Don't have an account? Sign up</Text>
+
       <StatusBar style="auto" />
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
