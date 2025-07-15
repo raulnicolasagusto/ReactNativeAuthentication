@@ -1,17 +1,31 @@
 import { TextInput, StyleSheet, TextInputProps } from "react-native";
+import { Controller } from "react-hook-form";
 
 type CustomInputProps = {
-  placeholder?: string;
+  control: any; // Type for the control prop from react-hook-form
+  name: string; // Name of the field in the form
 } & TextInputProps;
 
-export default function CustomInput(props: CustomInputProps){
+export default function CustomInput({control, name, ...props}: CustomInputProps){
     return (
-        <TextInput
-            autoCapitalize='none'
-            autoCorrect={false}
-            {...props}
-            style={[styles.input, props.style]}
-        />
+
+        <Controller control={control}
+              name={name}
+              render={({field: {onChange, onBlur, value}}) => ( 
+              <TextInput
+                  autoCapitalize='none'
+                  autoCorrect={false}
+                  {...props}
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  style={[styles.input, props.style]}
+                />
+              )}
+            />
+
+
+        
     );
 }
 
