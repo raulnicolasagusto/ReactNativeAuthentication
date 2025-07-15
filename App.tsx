@@ -1,5 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TextInput, Pressable, KeyboardAvoidingView, } from 'react-native';
+import  CustomInput  from './src/components/CustomInput';
 export default function App() {
 
   const onPress1 = () => {
@@ -10,8 +11,14 @@ export default function App() {
     <KeyboardAvoidingView style={styles.container} behavior="padding">
       <Text style={styles.title}>Sign in</Text>
 
-      <TextInput autoCapitalize='none' placeholder="Email" autoCorrect={false} autoComplete="email" style={styles.input} />
-      <TextInput placeholder="Password" style={styles.input} secureTextEntry />
+      <CustomInput 
+        placeholder="Email"
+        autoFocus
+        keyboardType='email-address'
+        autoCapitalize='none'
+        />
+        
+      <CustomInput />
 
       <Pressable style={styles.button} onPress={onPress1}>
         <Text style={styles.buttonText}>Iniciar sesion</Text>
@@ -32,14 +39,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
   },
-  input: {
-    borderWidth: 1,
-    width: '95%',
-    marginVertical: 10,
-    padding: 10,
-    borderRadius: 5,
-    backgroundColor: '#f0f0f0',
-  },
+  
 
   title: {
     fontSize: 24,
