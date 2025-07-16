@@ -1,4 +1,4 @@
-import { TextInput, StyleSheet, TextInputProps } from "react-native";
+import { TextInput, StyleSheet, TextInputProps, Text, View } from "react-native";
 import { Controller } from "react-hook-form";
 
 type CustomInputProps = {
@@ -9,18 +9,22 @@ type CustomInputProps = {
 export default function CustomInput({control, name, ...props}: CustomInputProps){
     return (
 
-        <Controller control={control}
+        <Controller
+              control={control}
               name={name}
-              render={({field: {onChange, onBlur, value}}) => ( 
-              <TextInput
-                  autoCapitalize='none'
-                  autoCorrect={false}
-                  {...props}
-                  value={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  style={[styles.input, props.style]}
-                />
+              render={({field: {onChange, onBlur, value}, fieldState: {error}}) => ( 
+              <View style={styles.container}>
+                <TextInput
+                    autoCapitalize='none'
+                    autoCorrect={false}
+                    {...props}
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    style={[styles.input, props.style]}
+                  />
+                  <Text style={styles.error}>{error?.message }</Text>
+              </View>
               )}
             />
 
@@ -30,6 +34,11 @@ export default function CustomInput({control, name, ...props}: CustomInputProps)
 }
 
 const styles = StyleSheet.create({
+    container: {
+      gap: 2,
+        width: '100%',
+        alignItems: 'center',
+    },
     input: {
     borderWidth: 1,
     width: '95%',
@@ -38,5 +47,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: '#f0f0f0',
   },
+  error: {
+    color: 'crimson',
+    fontSize: 13,
+  }
   
 });
