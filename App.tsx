@@ -13,6 +13,8 @@ const signInSchema = z.object({
   password: z.string({message: 'Password is required'}).min(8, 'Password must be at least 8 characters long'),
 });
 
+type SignInField = z.infer<typeof signInSchema>;
+
 export default function App() {
 
  const {
@@ -23,7 +25,7 @@ export default function App() {
     resolver: zodResolver(signInSchema)
   });
 
-  const onSignIn = (data: any) => {
+  const onSignIn = (data: SignInField) => {
     //manual validation
     console.log('Sign in: ', data);
   }
