@@ -5,7 +5,8 @@ import CustomButton from '@/components/CustomButton';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
+import { useAuth } from '@/providers/AuthProvider';
 
 // Validaciones con zod
 const signInSchema = z.object({
@@ -24,8 +25,13 @@ export default function SignInScreen() {
     resolver: zodResolver(signInSchema),
   });
 
+  //recordar singIn es una funcion que esta en AuthProvider.tsx
+  const { signIn } = useAuth();
+
   const onSignIn = (data: SignInField) => {
     console.log('Sign in: ', data);
+    signIn();
+    router.replace("/");
   };
 
   return (
