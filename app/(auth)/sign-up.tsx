@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from 'expo-router';
+import { useSignUp } from '@clerk/clerk-expo'
 
 // Validaciones con zod
 const signUpSchema = z.object({
@@ -16,16 +17,28 @@ const signUpSchema = z.object({
 type SignUpField = z.infer<typeof signUpSchema>;
 
 export default function SignUpScreen() {
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<SignUpField>({
+  const { control, handleSubmit } = useForm<SignUpField>({
     resolver: zodResolver(signUpSchema),
   });
 
-  const onSignUp = (data: SignUpField) => {
+  const { signUp, isLoaded } = useSignUp();
+
+  const onSignUp = async (data: SignUpField) => {
+    if (!isLoaded) return;
+
+    try {
+      await signUp.create({
+      emailAddress: data.email,
+      password: data.password,
+     });
+     
+    } catch (error) {
+      console.log('Error del sign up: ', error);
+    }
+
+    
     console.log('Sign up: ', data);
+    
   };
 
   return (

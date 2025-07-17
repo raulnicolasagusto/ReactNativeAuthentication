@@ -1,14 +1,16 @@
 
 import { Slot, Stack } from 'expo-router';
-import { AuthProvider } from '@/providers/AuthProvider';
+import { ClerkProvider } from '@clerk/clerk-expo';
+import { tokenCache } from '@clerk/clerk-expo/token-cache'
 
 export default function RootLayout() {
-  return (
-    <AuthProvider>
-      <Slot />
-    </AuthProvider>
+  return (    
+      <ClerkProvider tokenCache={tokenCache}>
+        <Slot />
+      </ClerkProvider>    
   );
 }
+   
 
 
 

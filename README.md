@@ -132,3 +132,44 @@ Se abrirá una ventana en tu navegador. Puedes escanear el código QR con la app
 ---
 
 ## ESTA SERIA LA PRIMERA PARTE
+
+## instalacion de clerk
+
+-Luego de contar con esta estructura de carpetas:
+ReactNativeAuthentication/
+│
+├── app/
+│   ├── (auth)/
+│   │   ├── sign-in.tsx
+│   │   └── sign-up.tsx
+|   |   |_layout.tsx
+|   |   
+│   ├── (protected)/
+│   │   ├── _layout.tsx
+│   │   └── home.tsx
+│   └── index.tsx
+|   |__ _layout.tsx
+│
+├── assets/
+│   ├── adaptive-icon.png
+│   ├── favicon.png
+│   ├── icon.png
+│   └── splash-icon.png
+│
+├── src/
+│   ├── components/
+│   │   ├── CustomButton.tsx
+│   │   └── CustomInput.tsx
+│   └── providers/
+│       └── AuthProvider.tsx
+│
+├── app.json
+├── package.json
+├── tsconfig.json
+
+
+-comenzamos la instalacion de clerk con "npm install @clerk/clerk-expo"
+
+- pegamos la APi key de clerk en .env
+-Imortamos el clerkProvider en el app/_layout.tsx ( el rootlayout)
+-Borramos la carpeta providers que creamos , seguimos con la instalacion de clerk

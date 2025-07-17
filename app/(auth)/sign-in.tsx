@@ -5,8 +5,8 @@ import CustomButton from '@/components/CustomButton';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Link, router } from 'expo-router';
-import { useAuth } from '@/providers/AuthProvider';
+import { Link } from 'expo-router';
+import { useSignIn } from '@clerk/clerk-expo'
 
 // Validaciones con zod
 const signInSchema = z.object({
@@ -14,24 +14,48 @@ const signInSchema = z.object({
   password: z.string({ message: 'Password is required' }).min(8, 'Password must be at least 8 characters long'),
 });
 
-type SignInField = z.infer<typeof signInSchema>;
+type SignInFields = z.infer<typeof signInSchema>;
 
 export default function SignInScreen() {
+  const { signIn, isLoaded } = useSignIn();
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<SignInField>({
+  } = useForm<SignInFields>({
     resolver: zodResolver(signInSchema),
   });
 
-  //recordar singIn es una funcion que esta en AuthProvider.tsx
-  const { signIn } = useAuth();
+ 
+  
 
-  const onSignIn = (data: SignInField) => {
+  const onSignIn = async (data: SignInFields) => {
+
+    
+
+    if (!isLoaded) return;
+
+    try {
+     const signInAttempt =  await signIn.create({
+        identifier: data.email,
+        password: data.password,
+      });
+
+      if (signInAttempt.status === 'complete') {
+        console.log('Sign in successful');
+      } else {
+        console.log('Sign in not completed, status:', signInAttempt.status);
+      }
+
+      console.log('Sign in attempt: ', signInAttempt);
+
+    } catch (err) {
+      console.log('Error del sign in: ', err);
+    }
+
     console.log('Sign in: ', data);
-    signIn();
-    router.replace("/");
+    
+    
   };
 
   return (
@@ -39,7 +63,7 @@ export default function SignInScreen() {
       <Text style={styles.title}>Sign in</Text>
 
       <View style={styles.form}>
-        <CustomInput<SignInField>
+        <CustomInput
           control={control}
           name="email"
           textContentType="emailAddress"
@@ -50,7 +74,7 @@ export default function SignInScreen() {
           autoCapitalize="none"
         />
 
-        <CustomInput<SignInField>
+        <CustomInput
           control={control}
           name="password"
           secureTextEntry
