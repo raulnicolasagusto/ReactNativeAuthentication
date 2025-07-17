@@ -55,7 +55,9 @@ export default function SignUpScreen() {
         />
       </View>
       <CustomButton text="Registrate" onPress={handleSubmit(onSignUp)} />
-      <Link style={styles.link} href="/(auth)/sign-in">Already have an account? Sign in</Link>
+      <Text style={styles.link}>
+          <Link href="/(auth)/sign-in">Already have an account? Sign in</Link>
+      </Text>
 
       <StatusBar style="auto" />
     </KeyboardAvoidingView>

@@ -55,7 +55,9 @@ export default function SignInScreen() {
         />
       </View>
       <CustomButton text="Iniciar sesion" onPress={handleSubmit(onSignIn)} />
-      <Link style={styles.link} href="/(auth)/sign-up">Don't have an account? Sign up</Link>
+      <Text style={styles.link}>
+        <Link href="/(auth)/sign-up">Don't have an account? Sign up</Link>
+      </Text>
 
       <StatusBar style="auto" />
     </KeyboardAvoidingView>
