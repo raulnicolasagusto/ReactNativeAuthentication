@@ -15,7 +15,7 @@ export const AuthProvider = ({  children }: PropsWithChildren) => {
     useEffect(() => {
       const checkAuthentication = async () => {
         // Simulate an authentication check (e.g., API call)
-         await new Promise((resolve) => setTimeout(resolve, 1000));
+         await new Promise((resolve) => setTimeout(resolve, 300));
         setIsAuthenticated(true);
       };
       checkAuthentication();
