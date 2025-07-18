@@ -6,7 +6,8 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from 'expo-router';
-import { isClerkAPIResponseError, useSignIn } from '@clerk/clerk-expo'
+import { isClerkAPIResponseError, useSignIn } from '@clerk/clerk-expo';
+import  SignUpWith   from '@/components/SignUpWith';
 
 // Validaciones con zod
 const signInSchema = z.object({
@@ -121,7 +122,7 @@ export default function SignInScreen() {
         <Link href="/(auth)/sign-up">Don't have an account? Sign up</Link>
       </Text>
 
-      <StatusBar style="auto" />
+      <SignUpWith />
     </KeyboardAvoidingView>
   );
 }
