@@ -3,7 +3,7 @@ import * as WebBrowser from 'expo-web-browser'
 import * as AuthSession from 'expo-auth-session'
 import { useSSO } from '@clerk/clerk-expo'
 import { View, Button } from 'react-native'
-
+import { MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
 import { de } from "zod/locales";
 import CustomButton from "./CustomButton";
 
@@ -29,36 +29,65 @@ export default function SignUpWith() {
       // Use the `useSSO()` hook to access the `startSSOFlow()` method
   const { startSSOFlow } = useSSO()
 
-  const onPress = useCallback(async () => {
-    try {
-      // Start the authentication process by calling `startSSOFlow()`
-      const { createdSessionId, setActive, signIn, signUp } = await startSSOFlow({
-        strategy: 'oauth_google',
-        // For web, defaults to current path
-        // For native, you must pass a scheme, like AuthSession.makeRedirectUri({ scheme, path })
-        // For more info, see https://docs.expo.dev/versions/latest/sdk/auth-session/#authsessionmakeredirecturioptions
-        redirectUrl: AuthSession.makeRedirectUri(),
-      })
+  const onGooglePress = useCallback(async () => {
+        try {
+            const { createdSessionId, setActive } = await startSSOFlow({
+                strategy: 'oauth_google',
+                redirectUrl: AuthSession.makeRedirectUri(),
+            });
+            if (createdSessionId) {
+                setActive!({ session: createdSessionId });
+            }
+        } catch (err) {
+            console.error(JSON.stringify(err, null, 2));
+        }
+    }, []);
 
-      // If sign in was successful, set the active session
-      if (createdSessionId) {
-        setActive!({ session: createdSessionId })
-      } else {
-        // If there is no `createdSessionId`,
-        // there are missing requirements, such as MFA
-        // Use the `signIn` or `signUp` returned from `startSSOFlow`
-        // to handle next steps
-      }
-    } catch (err) {
-      // See https://clerk.com/docs/custom-flows/error-handling
-      // for more info on error handling
-      console.error(JSON.stringify(err, null, 2))
-    }
-  }, [])
+    const onFacebookPress = useCallback(async () => {
+        try {
+            const { createdSessionId, setActive } = await startSSOFlow({
+                strategy: 'oauth_facebook',
+                redirectUrl: AuthSession.makeRedirectUri(),
+            });
+            if (createdSessionId) {
+                setActive!({ session: createdSessionId });
+            }
+        } catch (err) {
+            console.error(JSON.stringify(err, null, 2));
+        }
+    }, []);
 
+    const onApplePress = useCallback(async () => {
+        try {
+            const { createdSessionId, setActive } = await startSSOFlow({
+                strategy: 'oauth_apple',
+                redirectUrl: AuthSession.makeRedirectUri(),
+            });
+            if (createdSessionId) {
+                setActive!({ session: createdSessionId });
+            }
+        } catch (err) {
+            console.error(JSON.stringify(err, null, 2));
+        }
+    }, []);
 
-    return <CustomButton
-        text="Sign in with Google"
-        onPress={onPress}
-    />;
+    return (
+        <>
+            <CustomButton
+                text="Sign in with Google"
+                onPress={onGooglePress}
+                icon={<FontAwesome name="google" size={24} color="#4285F4" style={{ marginRight: 8 }} />}
+            />
+            <CustomButton
+                text="Sign in with Facebook"
+                onPress={onFacebookPress}
+                icon={<FontAwesome name="facebook" size={24} color="#3b5998" style={{ marginRight: 8 }} />}
+            />
+            <CustomButton
+                text="Sign in with Apple"
+                onPress={onApplePress}
+                icon={<MaterialCommunityIcons name="apple" size={24} color="#000" style={{ marginRight: 8 }} />}
+            />
+        </>
+    );
 }
