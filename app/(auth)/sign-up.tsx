@@ -5,7 +5,7 @@ import CustomButton from '@/components/CustomButton';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { useSignUp } from '@clerk/clerk-expo'
 
 // Validaciones con zod
@@ -31,7 +31,11 @@ export default function SignUpScreen() {
       emailAddress: data.email,
       password: data.password,
      });
-     
+
+      // Aquí dirigimos al usuario a la pantalla de verificación 
+      await signUp.prepareVerification({strategy: 'email_code'});
+      router.push('/verify');
+
     } catch (error) {
       console.log('Error del sign up: ', error);
     }
