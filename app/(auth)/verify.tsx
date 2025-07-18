@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from 'expo-router';
-import { useSignUp } from '@clerk/clerk-expo'
+import { useSignUp, isClerkAPIResponseError } from '@clerk/clerk-expo'
 
 // Validaciones con zod
 const verifySchema = z.object({
@@ -15,8 +15,17 @@ const verifySchema = z.object({
 
 type VerifyField = z.infer<typeof verifySchema>;
 
+const mapClerkErrorToFormField = (error: string) => {
+  switch (error.meta?.paramName) {
+    case 'code':
+     return 'code';
+    default:
+      return 'root'; // Default to root if no specific field is matched
+  }
+}
+
 export default function VerifyScreen() {
-  const { control, handleSubmit } = useForm<VerifyField>({
+  const { control, handleSubmit, setError, formState: { errors } } = useForm<VerifyField>({
     resolver: zodResolver(verifySchema),
   });
 
@@ -35,10 +44,21 @@ export default function VerifyScreen() {
       }else{
         console.log('Verification failed: ', signUpAttempt.status);
         console.log(signUpAttempt);
+        setError('root', { message: 'Could not complete the sign up' });
 
       }
-    } catch (error) {
-      console.log('Error verifying email: ', error);
+    } catch (err) {
+
+      if (isClerkAPIResponseError(err)) {    
+          err.errors.forEach((error) => {
+            const fieldName = mapClerkErrorToFormField(error);
+            setError(fieldName, {message: error.longMessage})
+          });
+      }else{
+        setError('root', { message: 'An unexpected error occurred. Please try again later.' });
+      } 
+
+      
     }
   };
 

@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, router } from 'expo-router';
-import { useSignUp } from '@clerk/clerk-expo'
+import { useSignUp, isClerkAPIResponseError  } from '@clerk/clerk-expo'
 
 // Validaciones con zod
 const signUpSchema = z.object({
@@ -16,8 +16,19 @@ const signUpSchema = z.object({
 
 type SignUpField = z.infer<typeof signUpSchema>;
 
+const mapClerkErrorToFormField = (error: string) => {
+  switch (error.meta?.paramName) {
+    case 'email_address':
+     return 'email';
+    case 'password':
+      return 'password';
+    default:
+      return 'root'; // Default to root if no specific field is matched
+  }
+}
+
 export default function SignUpScreen() {
-  const { control, handleSubmit } = useForm<SignUpField>({
+  const { control, handleSubmit, setError, formState: { errors } } = useForm<SignUpField>({
     resolver: zodResolver(signUpSchema),
   });
 
@@ -36,8 +47,17 @@ export default function SignUpScreen() {
       await signUp.prepareVerification({strategy: 'email_code'});
       router.push('/verify');
 
-    } catch (error) {
-      console.log('Error del sign up: ', error);
+    } catch (err) {
+      console.log('Error del sign up: ', err);
+       if (isClerkAPIResponseError(err)) {    
+          err.errors.forEach((error) => {
+            const fieldName = mapClerkErrorToFormField(error);
+            setError(fieldName, {message: error.longMessage})
+          });
+      }else{
+        setError('root', { message: 'An unexpected error occurred. Please try again later.' });
+      } 
+      // Alert.alert('Sign In Error', 'Invalid email or password');
     }
 
     
@@ -70,6 +90,9 @@ export default function SignUpScreen() {
           keyboardType="default"
           autoCapitalize="none"
         />
+
+    {errors.root && <Text style={{ color: 'crimson' }}>{errors.root.message}</Text>}
+
       </View>
       <CustomButton text="Registrate" onPress={handleSubmit(onSignUp)} />
       <Text style={styles.link}>
