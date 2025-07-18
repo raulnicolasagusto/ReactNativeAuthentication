@@ -1,12 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, Text, View, KeyboardAvoidingView, Alert } from 'react-native';
 import CustomInput from '@/components/CustomInput';
 import CustomButton from '@/components/CustomButton';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from 'expo-router';
-import { useSignIn } from '@clerk/clerk-expo'
+import { isClerkAPIResponseError, useSignIn } from '@clerk/clerk-expo'
 
 // Validaciones con zod
 const signInSchema = z.object({
@@ -16,12 +16,20 @@ const signInSchema = z.object({
 
 type SignInFields = z.infer<typeof signInSchema>;
 
+const clerkErrorToFormField = {
+  'identifier': 'email',
+  'password': 'password',
+}
+
+
+
+
 export default function SignInScreen() {
-  const { signIn, isLoaded } = useSignIn();
+  const { signIn, isLoaded, setActive } = useSignIn();
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    setError,
   } = useForm<SignInFields>({
     resolver: zodResolver(signInSchema),
   });
@@ -42,19 +50,28 @@ export default function SignInScreen() {
       });
 
       if (signInAttempt.status === 'complete') {
+        setActive({ session: signInAttempt.createdSessionId });
         console.log('Sign in successful');
       } else {
         console.log('Sign in not completed, status:', signInAttempt.status);
       }
 
-      console.log('Sign in attempt: ', signInAttempt);
+      
 
     } catch (err) {
-      console.log('Error del sign in: ', err);
-    }
+      console.log('Error del sign in: ', JSON.stringify(err, null, 2));
+      //verificamos si el error al iniciar sesion es de la API de Clerk
+        if (isClerkAPIResponseError(err)) {    
+          err.errors.forEach((error) => {
+            setError(clerkErrorToFormField[error.meta?.paramName], {message: error.longMessage})
+          });
+      } else {
+        setError('email', {message: 'Invalid email or password' });
+      }
+      // Alert.alert('Sign In Error', 'Invalid email or password');
 
     console.log('Sign in: ', data);
-    
+    }
     
   };
 
