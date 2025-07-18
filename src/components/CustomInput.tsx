@@ -21,7 +21,7 @@ export default function CustomInput<T extends FieldValues>({control, name, ...pr
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}
-                    style={[styles.input, props.style]}
+                    style={[styles.input, props.style, {borderColor: error ? 'crimson' : '#ccc'}]}
                   />
                   <Text style={styles.error}>{error?.message }</Text>
               </View>
