@@ -16,12 +16,22 @@ const signInSchema = z.object({
 
 type SignInFields = z.infer<typeof signInSchema>;
 
-const clerkErrorToFormField = {
-  'identifier': 'email',
-  'password': 'password',
+//metodo simple para mapear los errores de Clerk a los campos del formulario
+// const clerkErrorToFormField = {
+//   'identifier': 'email',
+//   'password': 'password',
+// }
+
+const mapClerkErrorToFormField = (error: string) => {
+  switch (error.meta?.paramName) {
+    case 'identifier':
+     return 'email';
+    case 'password':
+      return 'password';
+    default:
+      return 'root'; // Default to root if no specific field is matched
+  }
 }
-
-
 
 
 export default function SignInScreen() {
@@ -30,12 +40,12 @@ export default function SignInScreen() {
     control,
     handleSubmit,
     setError,
+    formState: { errors },
   } = useForm<SignInFields>({
     resolver: zodResolver(signInSchema),
   });
 
- 
-  
+  console.log(errors);
 
   const onSignIn = async (data: SignInFields) => {
 
@@ -54,6 +64,7 @@ export default function SignInScreen() {
         console.log('Sign in successful');
       } else {
         console.log('Sign in not completed, status:', signInAttempt.status);
+        setError('root', { message: 'sign in could not be completed.' });
       }
 
       
@@ -63,16 +74,17 @@ export default function SignInScreen() {
       //verificamos si el error al iniciar sesion es de la API de Clerk
         if (isClerkAPIResponseError(err)) {    
           err.errors.forEach((error) => {
-            setError(clerkErrorToFormField[error.meta?.paramName], {message: error.longMessage})
+            const fieldName = mapClerkErrorToFormField(error);
+            setError(fieldName, {message: error.longMessage})
           });
-      } else {
-        setError('email', {message: 'Invalid email or password' });
-      }
+      }else{
+        setError('root', { message: 'An unexpected error occurred. Please try again later.' });
+      } 
       // Alert.alert('Sign In Error', 'Invalid email or password');
 
     console.log('Sign in: ', data);
     }
-    
+     
   };
 
   return (
@@ -100,7 +112,10 @@ export default function SignInScreen() {
           keyboardType="default"
           autoCapitalize="none"
         />
+
+             
       </View>
+ {errors.root && <Text style={{ color: 'crimson' }}>{errors.root.message}</Text>}
       <CustomButton text="Iniciar sesion" onPress={handleSubmit(onSignIn)} />
       <Text style={styles.link}>
         <Link href="/(auth)/sign-up">Don't have an account? Sign up</Link>
